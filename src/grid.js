@@ -3,7 +3,7 @@
 _ = require('lodash')
 
 let Grid = () => {
-    grid = {}
+    const grid = {}
     
     return {
         get: (x, y) => {

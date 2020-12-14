@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/jtomazin/carcass1#readme",
   "dependencies": {
-    "lodash": "^4.17.20"
+    "chai": "^4.2.0",
+    "lodash": "^4.17.20",
+    "react": "^17.0.1"
   }
 }

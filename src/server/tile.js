@@ -1,23 +1,14 @@
 'use strict'
 
-_ = require('lodash')
+let assert = require('chai').assert
+let TESTS = {}
 
-// Different types of tile
-const TYPES = {
-  FIELD: 0
-  CITY: 1
-  ROAD: 2
-  RIVER: -1
-  // mission?
-}
+let _ = require('lodash')
 
-// also number of clockwise rotations
-const SIDES = {
-  TOP: 0
-  RIGHT: 1
-  BOTTOM: 2
-  LEFT: 3
-}
+let Piece = require('./piece')
+let Sides = require('./sides')
+let SIDES = Sides.SIDES
+let TERRAIN = require('./terrain')
 
 /* Each tile is uniquely identified by 9 nodes representing the type of its
    corners, sides, and center. This is necessary because the connectivity of the
@@ -32,34 +23,53 @@ const SIDES = {
    
    As a basic rule, edges matter for piece placement, and corners matter for connectivity
 
-   `geography` - 3x3 array of TYPES
+   `geography` - 3x3 array of TERRAIN
    `rotation` - SIDES
- */
+*/
 
-const SIDE_TO_GRID_LOOKUP = {
-  [TOP]: [0, 1]
-  [RIGHT]: [1, 2]
-  [BOTTOM]: [2, 1]
-  [LEFT]: [1, 0]
+let SIDE_TO_GRID_LOOKUP = {
+    [SIDES.TOP]: [0, 1],
+    [SIDES.RIGHT]: [1, 2],
+    [SIDES.BOTTOM]: [2, 1],
+    [SIDES.LEFT]: [1, 0]
 }
 
-let Tile = (geography, rotation) => {
+let Tile = ({geography}, rotation) => {
+    let getSide = (side) => {
+        let rotatedSide = (parseInt(side) + rotation) % 4
+        let [r, c] = SIDE_TO_GRID_LOOKUP[rotatedSide]
+        return geography[r][c]
+    }
+    TESTS['getSide'] = {
+        'should lookup sides correctly': () => {
+            let piece = Piece([
+                'CCC',
+                'RRR',
+                'FFF'
+            ])
+            let t = Tile(piece, SIDES.TOP)
+            assert.equal(t.getSide(SIDES.TOP), TERRAIN.CITY)
+            assert.equal(t.getSide(SIDES.RIGHT), TERRAIN.ROAD)
+            assert.equal(t.getSide(SIDES.BOTTOM), TERRAIN.FIELD)
+            assert.equal(t.getSide(SIDES.LEFT), TERRAIN.ROAD)
+            return
+        }
+    }
 
-  let getSide = (side) => {
-    rotatedSide = (side + rotation) % 4 
-    [r, c] = SIDE_TO_GRID_LOOKUP[rotatedSide]
-    return geography[r][c]
-  }
-  
-  return {
-    getSide,
-    getSides: () => _.fromPairs(
-      _.values(SIDES).map((side) => [side, getSide(side)])
+    let getSides = () => _.fromPairs(
+        _.values(SIDES).map((side) => [side, getSide(side)])
     )
     
-  }
-  
-}
+    return {
+        getSide,
+        getSides
+    }
 }
 
-Module.exports = {Tile, TYPES, SIDES}
+module.exports = Tile
+
+if (require.main === module) {
+    let { simpleRun } = require('./testing')
+    Tile({geography: []}) // necessary to populate TESTS
+    simpleRun(TESTS)
+}

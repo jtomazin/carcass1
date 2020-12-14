@@ -1,18 +1,21 @@
 'use strict'
 
-_ = require('lodash')
+let _ = require('lodash')
+let Sides = require('./sides')
 
 let Grid = () => {
     const grid = {}
+
+    let get = (x, y) => {
+        if (grid[x] == null) {
+            return null
+        } else {
+            return grid[x][y]
+        }
+    }
     
     return {
-        get: (x, y) => {
-            if (grid[x] == null) {
-                return null
-            } else {
-                return grid[x][y]
-            }
-        }
+        get,
         
         set: (x, y, val) => {
             if (grid[x] == null) {
@@ -20,13 +23,16 @@ let Grid = () => {
             }
             grid[x][y] = val
             return grid
-        }
+        },
 
-        getNeighbors: (x, y) => {
-            return _.flatten(
-                // [x-1, x, x+1].map((x) => [y-1, y, y-2]grid[x])
-            )
-        }
+        getGrid: () => grid, 
+        
+        getNeighbors: (x, y) => _.fromPairs(
+            _.values(Sides.SIDES).map((side) => {
+                let [dx, dy] = Sides.toDirection(side)
+                return [side, get(x + dx, y + dy)]
+            }).filter(([side, tile]) => tile != null)
+        )
     }
 }
 

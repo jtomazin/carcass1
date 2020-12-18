@@ -3,7 +3,7 @@
 let _ = require('lodash')
 let Sides = require('./sides')
 
-let Grid = () => {
+let Grid = (grid = undefined) => {
     const grid = {}
 
     let get = (x, y) => {
@@ -18,11 +18,12 @@ let Grid = () => {
         get,
         
         set: (x, y, val) => {
-            if (grid[x] == null) {
-                grid[x] = {}
+            let newGrid = _.cloneDeep(Grid)
+            if (newGrid[x] == null) {
+                newGrid[x] = {}
             }
-            grid[x][y] = val
-            return grid
+            newGrid[x][y] = val
+            return Grid(newGrid)
         },
 
         getGrid: () => grid, 

@@ -36,6 +36,9 @@ let Piece = (geography) => {
         )
     }
 
+    // TODO true iff exists some rotation where geographies are the same
+    let equals = () => false
+
     return {
         geography
     }

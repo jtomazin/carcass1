@@ -1,7 +1,8 @@
 'use strict'
 
 let assert = require('chai').assert
-let TESTS = {}
+let TOP_TESTS = {'sides': {}}
+let { runTests } = require('./testing')
 
 // also number of clockwise rotations
 const TOP = 0
@@ -20,15 +21,23 @@ let TO_DIRECTION = {
     [LEFT]: [-1, 0]
 }
 
+let getAdjacent = (side) => _.map(
+    [1, -1],
+    (d) => (parseInt(side) + d) % 4
+)
+
 let Sides = {
     SIDES,
     getOpposite: (side) => (parseInt(side) + 2) % 4,
+    getAdjacent,
+    areAdjacent: (side1, side2) => getAdjacent(parseInt(side1)).includes(parseInt(side2)),
     toDirection: (side) => TO_DIRECTION[side]
+
 }
 
 module.exports = Sides
 
-TESTS = {
+TOP_TESTS['sides'] = {
     'getOpposite': {
         'top': () => assert.equal(Sides.getOpposite(TOP), BOTTOM),
         'bottom': () => assert.equal(Sides.getOpposite(BOTTOM), TOP),
@@ -37,7 +46,4 @@ TESTS = {
     }
 }
 
-if (require.main === module) {
-    let { simpleRun } = require('./testing')
-    simpleRun(TESTS)
-}
+runTests(() => TOP_TESTS)

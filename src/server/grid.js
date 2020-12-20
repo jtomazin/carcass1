@@ -4,7 +4,9 @@ let _ = require('lodash')
 let Sides = require('./sides')
 
 let Grid = (grid = undefined) => {
-    const grid = {}
+    if (grid == null) {
+        grid = {}
+    }
 
     let get = (x, y) => {
         if (grid[x] == null) {
@@ -26,8 +28,8 @@ let Grid = (grid = undefined) => {
             return Grid(newGrid)
         },
 
-        getGrid: () => grid, 
-        
+        getGrid: () => _.cloneDeep(grid),
+
         getNeighbors: (x, y) => _.fromPairs(
             _.values(Sides.SIDES).map((side) => {
                 let [dx, dy] = Sides.toDirection(side)
